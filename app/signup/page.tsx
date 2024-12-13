@@ -29,21 +29,38 @@ export default function SignUpPage() {
   }, [user] );
 
 
-  const onSignUp = async () =>{
-    try{
+  const onSignUp = async () => {
+    try {
       setLoading(true);
-      const response = await axios.post("/api/users/signup", user);
-      console.log("signup success", response.data);
+  
+      // Make the POST request using fetch
+      const response = await fetch("/api/users/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user), // Convert the user object to JSON
+      });
+  
+      // Check if the response is successful
+      if (!response.ok) {
+        const errorData = await response.json(); // Parse the error message
+        throw new Error(errorData?.error || "Something went wrong");
+      }
+  
+      const data = await response.json(); // Parse the JSON response
+      console.log("signup success", data);
+  
+      // Redirect to the login page
       router.push("/login");
-    } catch(error:any){
-      console.log("signup failed" , error.message);
-      alert(" smth caused signup failure")
-    } finally{
+    } catch (error: any) {
+      console.log("signup failed", error.message);
+      alert("Something caused signup failure: " + error.message);
+    } finally {
       setLoading(false);
     }
+  };
   
-  }
-
   
 
   return (
